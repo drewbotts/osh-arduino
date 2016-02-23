@@ -1,4 +1,9 @@
+#ifndef LibOSH_NOMETADATA
+
 #include "LibOSH.h"
+
+namespace osh
+{
 
 
 #ifndef LibOSH_NOXML
@@ -12,12 +17,26 @@ void Device::toXML(Print& out)
 
 void Device::writeNamespaces(XMLWriter& w)
 {
-    w.tagField("xmlns", "http://www.opengis.net/sensorml/2.0");
-    w.tagField("xmlns:swe", "http://www.opengis.net/swe/2.0");
-    w.tagField("xmlns:gml", "http://www.opengis.net/gml/3.2");
+#ifndef XMLWRITER_NONAMESPACE
+    char nsUri[40];
+
+    buildUrl(OGC_NS_PREFIX, SML_NS, nsUri);
+    char tagName[6];
+    strcpy_P(tagName, XMLNS_PREFIX);
+    w.tagField(tagName, nsUri);
+
+    buildUrl(OGC_NS_PREFIX, SWE_NS, nsUri);
+    w.tagField(w.buildTagName(XMLNS_PREFIX, SWE_PREFIX), nsUri);
+
+    buildUrl(OGC_NS_PREFIX, GML_NS, nsUri);
+    w.tagField(w.buildTagName(XMLNS_PREFIX, GML_PREFIX), nsUri);
+
+    strcpy_P(nsUri, XLINK_NS);
+    w.tagField(w.buildTagName(XMLNS_PREFIX, XLINK_PREFIX), nsUri);
+#endif
 }
 
-#endif
+#endif // LibOSH_NOXML
 
 
 
@@ -28,5 +47,9 @@ void Device::toJSON(Print& out)
     // TODO
 }
 
-#endif
+#endif // LibOSH_NOJSON
 
+
+} // namespace osh
+
+#endif // LibOSH_NOMETADATA

@@ -1,11 +1,46 @@
+#ifndef LibOSH_NOMETADATA
+
 #include "LibOSH.h"
+
+namespace osh
+{
+
+void Sensor::addTimeStampUTC()
+{
+    addTimeStamp(DEF_ISO8601, DEF_UTC);
+}
+
+
+void Sensor::addTimeStampOBC(const char* uom)
+{
+    addTimeStamp(uom, 0);
+}
+
+
+void Sensor::addTimeStamp(const char* uom, const char* refFrame)
+{
+    Measurement* m = new Measurement();
+    m->setName("time");
+    m->setLabel("Sampling Time");
+    m->setDefinition(DEF_SAMPLING_TIME);
+    m->setUom(uom);
+    m->setRefFrame(refFrame);
+    m->setType(TIME);
+    addMeasurement(m);
+}
+
+
+void Sensor::addMeasurement(Measurement* meas)
+{
+    this->outputs[numOutputs++] = meas;
+}
 
 
 void Sensor::addMeasurement(const char* name, const char* def, const char* uom, const char* label, const char* type)
 {
     Measurement* output = new Measurement();
     output->setName(name);
-    output->setType((type != NULL) ? type : Measurement::QUANTITY);
+    output->setType((type != NULL) ? type : QUANTITY);
     output->setDefinition(def);
     output->setLabel(label);
     output->setUom(uom);
@@ -13,18 +48,17 @@ void Sensor::addMeasurement(const char* name, const char* def, const char* uom, 
 }
 
 
-void Sensor::sendData(float* data, Print& out)
+void Sensor::addLocationLLA(const char* def, const char* label)
 {
-    int lastIndex = numOutputs-1;
-    for (int i = 0; i < numOutputs; i++)
-    {
-        out.print(data[i]);
-        if (i < lastIndex)
-            out.print(',');
-    }
-
-    out.print('\r');
-    out.print('\n');
+    VectorMeas* v = new VectorMeas();
+    v->setName("loc");
+    v->setDefinition(def);
+    v->setLabel(label);
+    v->setRefFrame(DEF_EPSG4979);
+    v->addCoordinate("Lat", "deg", "Geodetic Latitude");
+    v->addCoordinate("Long", "deg", "Longitude");
+    v->addCoordinate("h", "m", "Altitude");
+    this->outputs[numOutputs++] = v;
 }
 
 
@@ -32,71 +66,81 @@ void Sensor::sendData(float* data, Print& out)
 
 void Sensor::writeXML(XMLWriter& w, bool nested)
 {
-    w.tagStart("PhysicalComponent");
-    w.tagField("gml:id", "S01");
+    // PhysicalComponent
+    w.tagStart(w.buildTagName(SML_PREFIX, ELT_COMPONENT));
+
+    // id
+    w.tagField(w.buildTagName(GML_PREFIX, ATT_ID), "S01");
+
+    // namespace decl
     if (!nested)
         writeNamespaces(w);
     w.tagEnd(true, false);
 
-    w.writeNode("gml:description", this->Description);
-    w.writeNode("gml:identifier", this->UniqueID);
+    // description
+    if (this->Description != NULL)
+        w.writeNode(w.buildTagName(GML_PREFIX, ELT_DESCRIPTION), this->Description);
 
-    // output description
-    w.tagOpen("outputs");
-    w.tagOpen("OutputList");
-    writeOutput(w, nested);
-    w.tagClose();
-    w.tagClose();
+    // identifier
+    if (this->UniqueID != NULL)
+        w.writeNode(w.buildTagName(GML_PREFIX, ELT_IDENTIFIER), this->UniqueID);
+
+    // name
+    if (this->Name != NULL)
+        w.writeNode(w.buildTagName(GML_PREFIX, ATT_NAME), this->Name);
+
+    // outputs
+    if (this->numOutputs > 0)
+    {
+        w.tagOpen(w.buildTagName(SML_PREFIX, ELT_OUTPUTS));
+        w.tagOpen(w.buildTagName(SML_PREFIX, ELT_OUTPUTLIST));
+        w.tagStart(w.buildTagName(SML_PREFIX, ELT_OUTPUT));
+        w.tagField(w.buildTagName(NULL, ATT_NAME), "out");
+        w.tagEnd(true, false);
+        writeOutput(w);
+        w.tagClose();
+        w.tagClose();
+        w.tagClose();
+    }
 
     w.tagClose(); // PhysicalComponent
 }
 
 
-void Sensor::writeOutput(XMLWriter& w, bool nested)
+void Sensor::writeOutput(XMLWriter& w)
 {
-    w.tagStart("output");
-
     if (numOutputs == 1)
     {
-        Measurement* m = outputs[0];
-        w.tagField("name", m->getName());
-        w.tagEnd(true, false);
-        m->writeXML(w, nested);
+        outputs[0]->writeXML(w);
     }
     else
     {
-        w.tagField("name", "rec");
-        w.tagEnd(true, false);
+        w.tagOpen(w.buildTagName(SML_PREFIX, ELT_DATARECORD));
 
-        w.tagOpen("swe:DataRecord");
         for (int i = 0; i < numOutputs; i++)
         {
             Measurement* m = outputs[i];
-
-            w.tagStart("swe:field");
-            w.tagField("name", m->getName());
+            w.tagStart(w.buildTagName(SWE_PREFIX, ELT_FIELD));
+            w.tagField(w.buildTagName(NULL, ATT_NAME), m->getName());
             w.tagEnd(true, false);
-
-            m->writeXML(w, nested);
+            m->writeXML(w);
             w.tagClose();
         }
+
         w.tagClose();
     }
-
-    w.tagClose();
 }
 
+#endif // LibOSH_NOXML
 
-void Measurement::writeXML(XMLWriter& w, bool nested)
+
+Sensor::~Sensor()
 {
-    w.tagStart(this->Type);
-    w.tagField("definition", this->Definition);
-    w.tagEnd(true, false);
-    w.writeNode("swe:label", (this->Label != 0) ? this->Label : this->Name);
-    w.tagStart("swe:uom");
-    w.tagField("code", this->Uom);
-    w.tagEnd(true, true);
-    w.tagClose();
+    for (int i = 0; i < numOutputs; i++)
+        delete outputs[i];
 }
 
-#endif
+
+} // namespace osh
+
+#endif // LibOSH_NOMETADATA

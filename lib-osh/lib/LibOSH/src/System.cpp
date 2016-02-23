@@ -1,5 +1,9 @@
+#ifndef LibOSH_NOMETADATA
+
 #include "LibOSH.h"
 
+namespace osh
+{
 
 void System::addSensor(Sensor* sensor)
 {
@@ -11,23 +15,44 @@ void System::addSensor(Sensor* sensor)
 
 void System::writeXML(XMLWriter& w, bool nested)
 {
-    w.tagStart("PhysicalSystem");
-    w.tagField("gml:id", "SYS01");
+    // PhysicalSystem
+    w.tagStart(w.buildTagName(GML_PREFIX, ELT_SYSTEM));
+
+    // id
+    w.tagField(w.buildTagName(GML_PREFIX, ATT_ID), "SYS01");
+
+    // namespace decl
     if (!nested)
         writeNamespaces(w);
     w.tagEnd(true, false);
 
-    w.writeNode("gml:description", this->Description);
-    w.writeNode("gml:identifier", this->UniqueID);
+    // description
+    if (this->Description != NULL)
+        w.writeNode(w.buildTagName(GML_PREFIX, ELT_DESCRIPTION), this->Description);
+
+    // identifier
+    if (this->UniqueID != NULL)
+        w.writeNode(w.buildTagName(GML_PREFIX, ELT_IDENTIFIER), this->UniqueID);
+
+    // name
+    if (this->Name != NULL)
+        w.writeNode(w.buildTagName(GML_PREFIX, ATT_NAME), this->Name);
 
     // output description
-    w.tagOpen("outputs");
-    w.tagOpen("OutputList");
+    w.tagOpen(w.buildTagName(SML_PREFIX, ELT_OUTPUTS));
+    w.tagOpen(w.buildTagName(SML_PREFIX, ELT_OUTPUTLIST));
 
     for (int i = 0; i < numSensors; i++)
     {
         Sensor* s = sensors[i];
-        s->writeOutput(w, true);
+        char name[10];
+        sprintf(name, "out%d", i+1);
+
+        w.tagStart(w.buildTagName(SML_PREFIX, ELT_OUTPUT));
+        w.tagField(w.buildTagName(NULL, ATT_NAME), name);
+        w.tagEnd(true, false);
+        s->writeOutput(w);
+        w.tagClose();
     }
 
     w.tagClose();
@@ -36,4 +61,9 @@ void System::writeXML(XMLWriter& w, bool nested)
     w.tagClose(); // PhysicalSystem
 }
 
-#endif
+#endif // end LibOSH_NOXML
+
+
+} // namespace osh
+
+#endif // LibOSH_NOMETADATA
