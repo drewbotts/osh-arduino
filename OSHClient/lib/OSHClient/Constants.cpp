@@ -1,6 +1,7 @@
-#ifndef LibOSH_NOMETADATA
 
-#include "LibOSH.h"
+#ifndef OSH_NOMETADATA
+
+#include "OSHClient.h"
 
 namespace osh
 {
@@ -14,7 +15,7 @@ const char GML_PREFIX[] PROGMEM = "g";
 const char SWE_PREFIX[] PROGMEM = "s";
 const char XLINK_PREFIX[] PROGMEM = "x";
 
-#ifndef LibOSH_NONAMESPACE
+#ifndef OSH_NONAMESPACE
 const char OGC_NS_PREFIX[] PROGMEM = "http://www.opengis.net/";
 const char SML_NS[] PROGMEM = "sensorml/2.0";
 const char SWE_NS[] PROGMEM = "swe/2.0";
@@ -61,5 +62,5 @@ const char DEF_EPSG4979[] PROGMEM = "crs/EPSG/0/4979";
 
 } // namespace osh
 
-#endif // LibOSH_NOMETADATA
+#endif // OSH_NOMETADATA
 

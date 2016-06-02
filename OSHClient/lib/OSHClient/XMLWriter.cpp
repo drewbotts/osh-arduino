@@ -18,7 +18,7 @@
 // Released to the public domain
 //
 
-#include <XMLWriter.h>
+#include "XMLWriter.h"
 
 XMLWriter::XMLWriter(Print* stream)
 {
@@ -36,7 +36,7 @@ void XMLWriter::reset()
 
 char* XMLWriter::buildTagName(const char* prefix, const char* name)
 {
-#ifndef XMLWRITER_NONAMESPACE
+#ifndef OSH_NOXMLNS
     if (prefix != NULL && strlen_P(prefix) > 0)
     {
         strcpy_P(_tagName, prefix);

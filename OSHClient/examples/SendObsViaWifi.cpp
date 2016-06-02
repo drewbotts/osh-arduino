@@ -1,12 +1,27 @@
-#include "Arduino.h"
-#include <LibOSH.h>
+#include <Arduino.h>
+#include <OSHClient.h>
 
 using namespace osh;
 
-#ifdef ESP8266
-#include "ESP8266WiFi.h"
-const char* ssid     = "SSID";
-const char* password = "***";
+#ifdef ARDUINO_ARCH_AVR
+static int freeRam()
+{
+    extern int __heap_start, *__brkval;
+    int v;
+    return (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval);
+}
+#endif
+
+#ifdef ARDUINO_ARCH_ESP8266
+static int freeRam()
+{
+}
+#endif
+
+#ifdef ARDUINO_ARCH_ESP8266
+#include <ESP8266WiFi.h>
+const char* ssid     = "IsaAlexHome";
+const char* password = "maracuyitaslovebananas";
 WiFiClient client;
 #endif
 
@@ -66,7 +81,7 @@ void setup()
     sys.toXML(Serial);
     //Serial.println(freeRam());
 
-#ifdef ESP8266
+#ifdef ARDUINO_ARCH_ESP8266
     // connect to WiFi
     Serial.println();
     Serial.println();

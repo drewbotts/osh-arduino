@@ -1,6 +1,7 @@
-#ifndef LibOSH_NOMETADATA
 
-#include "LibOSH.h"
+#ifndef OSH_NOMETADATA
+
+#include "OSHClient.h"
 
 namespace osh
 {
@@ -62,7 +63,7 @@ void Sensor::addLocationLLA(const char* def, const char* label)
 }
 
 
-#ifndef LibOSH_NOXML
+#ifndef OSH_NOXML
 
 void Sensor::writeXML(XMLWriter& w, bool nested)
 {
@@ -131,7 +132,7 @@ void Sensor::writeOutput(XMLWriter& w)
     }
 }
 
-#endif // LibOSH_NOXML
+#endif // OSH_NOXML
 
 
 Sensor::~Sensor()
@@ -143,4 +144,4 @@ Sensor::~Sensor()
 
 } // namespace osh
 
-#endif // LibOSH_NOMETADATA
+#endif // OSH_NOMETADATA

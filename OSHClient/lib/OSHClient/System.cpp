@@ -1,6 +1,7 @@
-#ifndef LibOSH_NOMETADATA
 
-#include "LibOSH.h"
+#ifndef OSH_NOMETADATA
+
+#include "OSHClient.h"
 
 namespace osh
 {
@@ -11,7 +12,7 @@ void System::addSensor(Sensor* sensor)
 }
 
 
-#ifndef LibOSH_NOXML
+#ifndef OSH_NOXML
 
 void System::writeXML(XMLWriter& w, bool nested)
 {
@@ -61,9 +62,9 @@ void System::writeXML(XMLWriter& w, bool nested)
     w.tagClose(); // PhysicalSystem
 }
 
-#endif // end LibOSH_NOXML
+#endif // end OSH_NOXML
 
 
 } // namespace osh
 
-#endif // LibOSH_NOMETADATA
+#endif // OSH_NOMETADATA

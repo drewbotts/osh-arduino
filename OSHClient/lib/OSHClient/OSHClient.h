@@ -1,34 +1,11 @@
-#ifndef LibOSH_H
-#define LibOSH_H
+#ifndef OSH_H
+#define OSH_H
 
-#ifndef LibOSH_NOXML
+#ifndef OSH_NOXML
 #include "XMLWriter.h"
 #endif
 
-#ifdef LibOSH_SOS
-#include <Ethernet.h>
-#include <SPI.h>
-#endif
-
-/*#ifndef NULL
-#define NULL ((void *) 0)
-#endif*/
-
-#ifdef ARDUINO_ARCH_AVR
-static int freeRam()
-{
-    extern int __heap_start, *__brkval;
-    int v;
-    return (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval);
-}
-#endif
-
-#ifdef ESP8266
-static int freeRam()
-{
-}
-#endif
-
+#include <Client.h>
 
 // get/set macro
 #define OSH_GETSETVAR(type, name) \
@@ -42,7 +19,7 @@ public: \
 namespace osh
 {
 
-#ifndef LibOSH_NOMETADATA
+#ifndef OSH_NOMETADATA
 
 /**
  * A bunch of strings stored in flash so we don't use up all the RAM!
@@ -53,7 +30,7 @@ extern const char GML_PREFIX[] PROGMEM;
 extern const char SWE_PREFIX[] PROGMEM;
 extern const char XLINK_PREFIX[] PROGMEM;
 
-#ifndef XMLWRITER_NONAMESPACE
+#ifndef OSH_NOXMLNS
 extern const char OGC_NS_PREFIX[] PROGMEM;
 extern const char SML_NS[] PROGMEM;
 extern const char SWE_NS[] PROGMEM;
@@ -142,11 +119,11 @@ public:
     Measurement();
     virtual ~Measurement() {};
 
-#ifndef LibOSH_NOXML
+#ifndef OSH_NOXML
     virtual void writeXML(XMLWriter& w);
 #endif
 
-#ifndef LibOSH_NOJSON
+#ifndef OSH_NOJSON
     // TODO JSON serialization
 #endif
 };
@@ -165,11 +142,11 @@ public:
     ~VectorMeas();
     void addCoordinate(const char* axisID, const char* uom, const char* label = 0, const char* type = 0);
 
-#ifndef LibOSH_NOXML
+#ifndef OSH_NOXML
     virtual void writeXML(XMLWriter& w);
 #endif
 
-#ifndef LibOSH_NOJSON
+#ifndef OSH_NOJSON
     // TODO JSON serialization
 #endif
 };
@@ -189,7 +166,7 @@ public:
     virtual ~Device() {};
     virtual bool isSystem() = 0;
 
-#ifndef LibOSH_NOXML
+#ifndef OSH_NOXML
 public:
     void toXML(Print& out);
     virtual void writeXML(XMLWriter& w, bool nested) = 0;
@@ -197,7 +174,7 @@ protected:
     void writeNamespaces(XMLWriter& w);
 #endif
 
-#ifndef LibOSH_NOJSON
+#ifndef OSH_NOJSON
 public:
     void toJSON(Print& out);
 #endif
@@ -227,13 +204,13 @@ public:
     void addLocationLLA(const char* def, const char* label = 0);
     bool isSystem() { return false; };
 
-#ifndef LibOSH_NOXML
+#ifndef OSH_NOXML
 public:
     void writeXML(XMLWriter& w, bool nested);
     void writeOutput(XMLWriter& w);
 #endif
 
-#ifndef LibOSH_NOJSON
+#ifndef OSH_NOJSON
     // TODO JSON serialization
 #endif
 };
@@ -255,18 +232,18 @@ public:
     Sensor** getSensors() { return sensors; };
     bool isSystem() { return true; };
 
-#ifndef LibOSH_NOXML
+#ifndef OSH_NOXML
 public:
     void writeXML(XMLWriter& w, bool nested);
 #endif
 
-#ifndef LibOSH_NOJSON
+#ifndef OSH_NOJSON
     // TODO JSON serialization
 #endif
 };
 
 
-#endif // LibOSH_NOMETADATA
+#endif // OSH_NOMETADATA
 
 
 /**
@@ -286,9 +263,6 @@ public:
     virtual void sendMeasurement() = 0;
 };
 
-
-
-#ifdef LibOSH_SOS
 
 /**
  * SOS client able to register the sensor and then push data to the server
@@ -322,11 +296,8 @@ private:
 
 };
 
-#endif // LibOSH_SOS
 
-
-
-#ifdef LibOSH_MQTT
+#ifdef OSH_MQTT
 
 /**
  * MQTT client publishing sensor description and data to predefined topics
@@ -337,8 +308,8 @@ class MQTTClient: public OSHClient
 
 }
 
-#endif // LibOSH_MQTT
+#endif // OSH_MQTT
 
 } // namespace osh
 
-#endif // LibOSH_H
+#endif // OSH_H

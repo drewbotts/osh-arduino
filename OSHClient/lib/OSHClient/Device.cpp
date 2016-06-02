@@ -1,12 +1,13 @@
-#ifndef LibOSH_NOMETADATA
 
-#include "LibOSH.h"
+#ifndef OSH_NOMETADATA
+
+#include "OSHClient.h"
 
 namespace osh
 {
 
 
-#ifndef LibOSH_NOXML
+#ifndef OSH_NOXML
 
 void Device::toXML(Print& out)
 {
@@ -17,7 +18,7 @@ void Device::toXML(Print& out)
 
 void Device::writeNamespaces(XMLWriter& w)
 {
-#ifndef XMLWRITER_NONAMESPACE
+#ifndef OSH_NOXMLNS
     char nsUri[40];
 
     buildUrl(OGC_NS_PREFIX, SML_NS, nsUri);
@@ -36,20 +37,20 @@ void Device::writeNamespaces(XMLWriter& w)
 #endif
 }
 
-#endif // LibOSH_NOXML
+#endif // OSH_NOXML
 
 
 
-#ifndef LibOSH_NOJSON
+#ifndef OSH_NOJSON
 
 void Device::toJSON(Print& out)
 {
     // TODO
 }
 
-#endif // LibOSH_NOJSON
+#endif // OSH_NOJSON
 
 
 } // namespace osh
 
-#endif // LibOSH_NOMETADATA
+#endif // OSH_NOMETADATA

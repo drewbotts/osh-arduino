@@ -1,6 +1,7 @@
-#ifndef LibOSH_NOMETADATA
 
-#include "LibOSH.h"
+#ifndef OSH_NOMETADATA
+
+#include "OSHClient.h"
 
 namespace osh
 {
@@ -126,6 +127,6 @@ VectorMeas::~VectorMeas()
 
 } // namespace osh
 
-#endif // LibOSH_NOMETADATA
+#endif // OSH_NOMETADATA
 
 

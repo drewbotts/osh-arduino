@@ -1,5 +1,4 @@
-#ifdef LibOSH_SOS
-#include "LibOSH.h"
+#include "OSHClient.h"
 
 #ifdef ESP8266
 #include <ESP8266WiFi.h>
@@ -100,6 +99,7 @@ SOSClient::SOSClient(Client& client, const char* endpoint)
     this->server = "192.168.0.16";
     this->path = "/sensorhub/sos";
     this->port = 8181;
+    this->sendingSensor = NULL;
 }
 
 
@@ -293,6 +293,3 @@ void SOSClient::sendMeasurement()
 }
 
 } // end namespace osh
-
-#endif // end LibOSH_SOS
-
