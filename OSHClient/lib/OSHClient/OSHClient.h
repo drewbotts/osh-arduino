@@ -279,7 +279,7 @@ private:
     String measBuf;
 
 public:
-    SOSClient(Client& client, const char* endpoint);
+    SOSClient(Client& client, const char* hostNameOrIp, int httpPort, const char* sosPath);
     void registerDevice(Device* device);
     void pushInt(int val);
     void pushUInt(unsigned int val);

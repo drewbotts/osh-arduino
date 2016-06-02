@@ -92,14 +92,14 @@ public:
 };
 
 
-SOSClient::SOSClient(Client& client, const char* endpoint)
+SOSClient::SOSClient(Client& client, const char* hostNameOrIp, int httpPort, const char* sosPath)
 {
     this->client = &client;
     this->device = NULL;
-    this->server = "192.168.0.16";
-    this->path = "/sensorhub/sos";
-    this->port = 8181;
     this->sendingSensor = NULL;
+    this->server = hostNameOrIp;
+    this->port = httpPort;
+    this->path = sosPath;
 }
 
 

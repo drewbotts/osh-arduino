@@ -100,7 +100,7 @@ void setup()
     Serial.print("IP address: ");
     Serial.println(WiFi.localIP());
 
-    sos = new SOSClient(client, "http://192.168.0.16:8181/sensorhub/sos");
+    sos = new SOSClient(client, "192.168.0.16", 8181, "/sensorhub/sos");
     sos->registerDevice(&sys);
 #endif
 }

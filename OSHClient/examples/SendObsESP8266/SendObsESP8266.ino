@@ -49,7 +49,7 @@ void setup()
     Serial.println(WiFi.localIP());
 
     // register to OSH node using SOS-T protocol
-    sos = new SOSClient(client, "http://192.168.0.16:8181/sensorhub/sos");
+    sos = new SOSClient(client, "192.168.0.16", 8181, "/sensorhub/sos");
     sos->registerDevice(&s1);
 }
 
