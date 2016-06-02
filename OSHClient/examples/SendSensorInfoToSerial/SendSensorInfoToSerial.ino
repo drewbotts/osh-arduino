@@ -1,5 +1,9 @@
 #include <OSHClient.h>
 
+#ifndef LED_BUILTIN
+#define LED_BUILTIN 5 
+#endif
+
 using namespace osh;
 
 Sensor s1;
