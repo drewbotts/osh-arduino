@@ -116,7 +116,7 @@ void Sensor::writeOutput(XMLWriter& w)
     }
     else
     {
-        w.tagOpen(w.buildTagName(SML_PREFIX, ELT_DATARECORD));
+        w.tagOpen(w.buildTagName(SWE_PREFIX, ELT_DATARECORD));
 
         for (int i = 0; i < numOutputs; i++)
         {
