@@ -174,7 +174,14 @@ void SOSClient::sendResultTemplate(const char* offeringID, Sensor* s)
     w.tagField("version", "2.0.0");
     w.tagEnd(true, false);
     w.tagOpen("proposedTemplate");
-    w.tagOpen("ResultTemplate");
+
+    w.tagStart("ResultTemplate");
+#ifndef OSH_NOXMLNS
+    char nsUri[40];
+    buildUrl(OGC_NS_PREFIX, SWE_NS, nsUri);
+    w.tagField(w.buildTagName(XMLNS_PREFIX, SWE_PREFIX), nsUri);
+#endif
+    w.tagEnd(true, false);
 
     w.writeNode("offering", offeringID);
 
