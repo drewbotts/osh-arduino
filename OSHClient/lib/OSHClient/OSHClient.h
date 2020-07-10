@@ -74,6 +74,7 @@ extern const char DEF_ISO8601[] PROGMEM;
 extern const char DEF_UTC[] PROGMEM;
 extern const char DEF_EPSG4326[] PROGMEM;
 extern const char DEF_EPSG4979[] PROGMEM;
+extern const char DEF_NED[] PROGMEM;
 
 
 static void buildUrl(const char* prefix, const char* path, char* buf)
@@ -202,6 +203,7 @@ public:
     void addMeasurement(Measurement* meas);
     void addMeasurement(const char* name, const char* def, const char* uom, const char* label = 0, const char* type = 0);
     void addLocationLLA(const char* def, const char* label = 0);
+    void addOrientationEuler(const char* def, const char* label = 0);
     bool isSystem() { return false; };
 
 #ifndef OSH_NOXML

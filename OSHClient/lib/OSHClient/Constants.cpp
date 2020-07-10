@@ -59,6 +59,7 @@ const char DEF_ISO8601[] PROGMEM = "uom/ISO-8601/0/Gregorian";
 const char DEF_UTC[] PROGMEM = "trs/BIPM/0/UTC";
 const char DEF_EPSG4326[] PROGMEM = "crs/EPSG/0/4326";
 const char DEF_EPSG4979[] PROGMEM = "crs/EPSG/0/4979";
+const char DEF_NED[] PROGMEM = "cs/OGC/0/NED";
 
 } // namespace osh
 

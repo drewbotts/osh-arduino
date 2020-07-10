@@ -62,6 +62,18 @@ void Sensor::addLocationLLA(const char* def, const char* label)
     this->outputs[numOutputs++] = v;
 }
 
+void Sensor::addOrientationEuler(const char* def, const char* label)
+{
+    VectorMeas* v = new VectorMeas();
+    v->setName("orientation");
+    v->setDefinition(def);
+    v->setLabel(label);
+    v->setRefFrame(DEF_NED);
+    v->addCoordinate("Z", "deg" "Heading Angle");
+    v->addCoordinate("Y", "deg", "Pitch Angle");
+    v->addCoordinate("X", "deg", "Roll Angle");
+    this->outputs[numOutputs++] = v;
+}
 
 #ifndef OSH_NOXML
 
