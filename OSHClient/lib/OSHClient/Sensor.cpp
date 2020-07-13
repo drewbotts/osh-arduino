@@ -62,16 +62,16 @@ void Sensor::addLocationLLA(const char* def, const char* label)
     this->outputs[numOutputs++] = v;
 }
 
-void Sensor::addOrientationEuler(const char* def, const char* label)
+void Sensor::addOrientationEuler(const char* def, const char* label, const char* zDef, const char* yDef, const char* xDef)
 {
     VectorMeas* v = new VectorMeas();
     v->setName("orientation");
     v->setDefinition(def);
     v->setLabel(label);
     v->setRefFrame(DEF_NED);
-    v->addCoordinate("Z", "deg" "Heading Angle");
-    v->addCoordinate("Y", "deg", "Pitch Angle");
-    v->addCoordinate("X", "deg", "Roll Angle");
+    v->addCoordinate("Z", "deg", "Heading Angle", zDef);
+    v->addCoordinate("Y", "deg", "Pitch Angle", yDef);
+    v->addCoordinate("X", "deg", "Roll Angle", xDef);
     this->outputs[numOutputs++] = v;
 }
 

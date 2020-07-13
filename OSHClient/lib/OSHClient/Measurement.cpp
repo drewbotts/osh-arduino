@@ -77,6 +77,17 @@ void VectorMeas::addCoordinate(const char* axisID, const char* uom, const char* 
     this->coords[numCoords++] = m;
 }
 
+void VectorMeas::addCoordinate(const char* axisID, const char* uom, const char* label, const char* type, const char* def)
+{
+    Measurement* m = new Measurement();
+    m->setName(axisID);
+    m->setType((type != NULL) ? type : QUANTITY);
+    m->setDefinition(def);
+    m->setAxisID(axisID);
+    m->setLabel(label);
+    m->setUom(uom);
+    this->coords[numCoords++] = m;
+}
 
 void VectorMeas::writeXML(XMLWriter& w)
 {
