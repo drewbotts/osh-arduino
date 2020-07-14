@@ -75,6 +75,18 @@ void Sensor::addOrientationEuler(const char* def, const char* label, const char*
     this->outputs[numOutputs++] = v;
 }
 
+void Sensor::addAccel(const char* def, const char* label)
+{
+    VectorMeas* v = new VectorMeas();
+    v->setDefinition(def);
+    v->setLabel(label);
+    v->setRefFrame("#PLATFORM_FRAME");
+    v->addCoordinate("X", "m/s2", "X Accel", def);
+    v->addCoordinate("Y", "m/s2", "Y Accel", def);
+    v->addCoordinate("Z", "m/s2", "Z Accel", def);
+    this->outputs[numOutputs++] = v;
+}
+
 #ifndef OSH_NOXML
 
 void Sensor::writeXML(XMLWriter& w, bool nested)

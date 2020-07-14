@@ -6,14 +6,14 @@
 
 using namespace osh;
 
-const char ssid[]     = "WiFi SSID";
-const char password[] = "WiFi Password";
+const char ssid[]     = "x";
+const char password[] = "x";
 WiFiClient client;
 
 Sensor s1;
 SOSClient* sos;
 
-static const char ACCEL_URI[] PROGMEM = "http://sweet.jpl.nasa.gov/2.3/reprMath.owl#Acceleration";
+static const char ACCEL_URI[] PROGMEM = "http://qudt.org/vocab/quantitykind/LinearAcceleration";
 
 /* Assign a unique ID to this sensor at the same time */
 Adafruit_ADXL345_Unified accel = Adafruit_ADXL345_Unified(12345);
@@ -26,10 +26,10 @@ void setup() {
     s1.setUniqueID("urn:osh:esp8266:adxl:001");
     s1.setName("ADXL345 001");
     s1.addTimeStampOBC("ms");
-    s1.addMeasurement("acclx", ACCEL_URI, "m/s^2", "Acceleration X");
-    s1.addMeasurement("accly", ACCEL_URI, "m/s^2", "Acceleration Y");
-    s1.addMeasurement("acclz", ACCEL_URI, "m/s^2", "Acceleration Z");
+    
+    
 
+    
     // connect to WiFi
     Serial.print("Connecting to ");
     Serial.println(ssid);
@@ -46,7 +46,7 @@ void setup() {
     Serial.println(WiFi.localIP());
 
     // register to OSH node using SOS-T protocol
-    sos = new SOSClient(client, "192.168.0.25", 8181, "/sensorhub/sos");
+    sos = new SOSClient(client, "bottsgeo.simple-url.com", 9292, "/sensorhub/sos");
     sos->registerDevice(&s1);
 
 
