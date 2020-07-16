@@ -75,12 +75,12 @@ extern const char DEF_UTC[] PROGMEM;
 extern const char DEF_EPSG4326[] PROGMEM;
 extern const char DEF_EPSG4979[] PROGMEM;
 extern const char DEF_NED[] PROGMEM;
-extern const char DEF_HEADING[] PROGMEM = "http://sensorml.com/ont/swe/property/TrueHeading";
-extern const char DEF_PITCH[] PROGMEM = "http://sensorml.com/ont/swe/property/PitchAngle";
-extern const char DEF_ROLL[] PROGMEM = "http://sensorml.com/ont/swe/property/RollAngle";
-extern const char DEF_LAT[] PROGMEM = "http://www.opengis.net/def/axis-name/EPSG/0/9901";
-extern const char DEF_LON[] PROGMEM = "http://www.opengis.net/def/axis-name/EPSG/0/9902";
-extern const char DEF_ACCEL[] PROGMEM = "http://qudt.org/vocab/quantitykind/LinearAcceleration";
+extern const char DEF_HEADING[] PROGMEM;
+extern const char DEF_PITCH[] PROGMEM;
+extern const char DEF_ROLL[] PROGMEM;
+extern const char DEF_LAT[] PROGMEM;
+extern const char DEF_LON[] PROGMEM;
+extern const char DEF_ACCEL[] PROGMEM;
 
 static void buildUrl(const char* prefix, const char* path, char* buf)
 {
