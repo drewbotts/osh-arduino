@@ -60,6 +60,15 @@ const char DEF_UTC[] PROGMEM = "trs/BIPM/0/UTC";
 const char DEF_EPSG4326[] PROGMEM = "crs/EPSG/0/4326";
 const char DEF_EPSG4979[] PROGMEM = "crs/EPSG/0/4979";
 const char DEF_NED[] PROGMEM = "cs/OGC/0/NED";
+const char DEF_HEADING[] PROGMEM = "http://sensorml.com/ont/swe/property/TrueHeading";
+const char DEF_PITCH[] PROGMEM = "http://sensorml.com/ont/swe/property/PitchAngle";
+const char DEF_ROLL[] PROGMEM = "http://sensorml.com/ont/swe/property/RollAngle";
+const char DEF_LAT[] PROGMEM = "http://www.opengis.net/def/axis-name/EPSG/0/9901";
+const char DEF_LON[] PROGMEM = "http://www.opengis.net/def/axis-name/EPSG/0/9902";
+const char DEF_ACCEL[] PROGMEM = "http://qudt.org/vocab/quantitykind/LinearAcceleration";
+
+
+
 
 } // namespace osh
 

@@ -56,8 +56,8 @@ void Sensor::addLocationLLA(const char* def, const char* label)
     v->setDefinition(def);
     v->setLabel(label);
     v->setRefFrame(DEF_EPSG4979);
-    v->addCoordinate("Lat", "deg", "Geodetic Latitude");
-    v->addCoordinate("Long", "deg", "Longitude");
+    v->addCoordinate("Lat", "deg", "Geodetic Latitude", DEF_LAT);
+    v->addCoordinate("Long", "deg", "Longitude", DEF_LON);
     v->addCoordinate("h", "m", "Altitude");
     this->outputs[numOutputs++] = v;
 }
@@ -69,9 +69,9 @@ void Sensor::addOrientationEuler(const char* def, const char* label)
     v->setDefinition(def);
     v->setLabel(label);
     v->setRefFrame(DEF_NED);
-    v->addCoordinate("Z", "deg", "Heading Angle");
-    v->addCoordinate("Y", "deg", "Pitch Angle");
-    v->addCoordinate("X", "deg", "Roll Angle");
+    v->addCoordinate("Z", "deg", "Heading Angle", DEF_HEADING);
+    v->addCoordinate("Y", "deg", "Pitch Angle", DEF_PITCH);
+    v->addCoordinate("X", "deg", "Roll Angle", DEF_ROLL);
     this->outputs[numOutputs++] = v;
 }
 
@@ -81,9 +81,9 @@ void Sensor::addAccel(const char* def, const char* label)
     v->setDefinition(def);
     v->setLabel(label);
     v->setRefFrame("#PLATFORM_FRAME");
-    v->addCoordinate("X", "m/s2", "X Accel");
-    v->addCoordinate("Y", "m/s2", "Y Accel");
-    v->addCoordinate("Z", "m/s2", "Z Accel");
+    v->addCoordinate("X", "m/s2", "X Accel", DEF_ACCEL);
+    v->addCoordinate("Y", "m/s2", "Y Accel", DEF_ACCEL);
+    v->addCoordinate("Z", "m/s2", "Z Accel", DEF_ACCEL);
     this->outputs[numOutputs++] = v;
 }
 
