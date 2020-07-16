@@ -6,8 +6,8 @@
 
 using namespace osh;
 
-const char ssid[]     = "x";
-const char password[] = "x";
+const char ssid[]     = "Seng";
+const char password[] = "earthangel";
 WiFiClient client;
 
 Sensor s1;
@@ -24,10 +24,9 @@ void setup() {
 
     // set sensor metadata
     s1.setUniqueID("urn:osh:esp8266:adxl:001");
-    s1.setName("ADXL345 001");
+    s1.setName("ADXL345 - Accel");
     s1.addTimeStampOBC("ms");
-    
-    
+    s1.addAccel(ACCEL_URI, "Float Acceleration");
 
     
     // connect to WiFi

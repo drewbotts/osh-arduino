@@ -141,8 +141,8 @@ private:
 
 public:
     ~VectorMeas();
-    void addCoordinate(const char* axisID, const char* uom, const char* label = 0, const char* type = 0);
-    void addCoordinate(const char* axisID, const char* uom, const char* label = 0, const char* type = 0, const char* def);
+    // void addCoordinate(const char* axisID, const char* uom, const char* label = 0, const char* type = 0);
+    void addCoordinate(const char* axisID, const char* uom, const char* label = 0, const char* type = 0, const char* def=0);
     
 
 #ifndef OSH_NOXML
@@ -205,7 +205,7 @@ public:
     void addMeasurement(Measurement* meas);
     void addMeasurement(const char* name, const char* def, const char* uom, const char* label = 0, const char* type = 0);
     void addLocationLLA(const char* def, const char* label = 0);
-    void addOrientationEuler(const char* def, const char* label = 0, const char* zDef, const char* yDef, const char* xDef);
+    void addOrientationEuler(const char* def, const char* label = 0);
     void addAccel(const char* def, const char* label = 0);
     bool isSystem() { return false; };
 
