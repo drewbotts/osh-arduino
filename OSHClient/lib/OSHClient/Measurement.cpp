@@ -93,6 +93,7 @@ void VectorMeas::writeXML(XMLWriter& w)
 {
     // Vector
     w.tagStart(w.buildTagName(SWE_PREFIX, ELT_VECTOR));
+    
 
     // definition attribute
     char defUri[80];

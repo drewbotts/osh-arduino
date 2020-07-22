@@ -16,7 +16,7 @@ const char SWE_PREFIX[] PROGMEM = "s";
 const char XLINK_PREFIX[] PROGMEM = "x";
 
 #ifndef OSH_NONAMESPACE
-const char OGC_NS_PREFIX[] PROGMEM = "http://www.opengis.net/";
+const char OGC_NS_PREFIX[] PROGMEM = "http://www.opengis.net/def/";
 const char SML_NS[] PROGMEM = "sensorml/2.0";
 const char SWE_NS[] PROGMEM = "swe/2.0";
 const char GML_NS[] PROGMEM = "gml/3.2";
@@ -53,13 +53,13 @@ const char ATT_HREF[] PROGMEM = "href";
 const char ATT_CODE[] PROGMEM = "code";
 
 const char HTTP_PREFIX[] PROGMEM = "http://";
-const char OGC_DEF_PREFIX[] PROGMEM = "http://www.opengis.net/def/";
-const char DEF_SAMPLING_TIME[] PROGMEM = "property/OGC/0/SamplingTime";
-const char DEF_ISO8601[] PROGMEM = "uom/ISO-8601/0/Gregorian";
-const char DEF_UTC[] PROGMEM = "trs/BIPM/0/UTC";
-const char DEF_EPSG4326[] PROGMEM = "crs/EPSG/0/4326";
-const char DEF_EPSG4979[] PROGMEM = "crs/EPSG/0/4979";
-const char DEF_NED[] PROGMEM = "cs/OGC/0/NED";
+const char OGC_DEF_PREFIX[] PROGMEM = "";
+const char DEF_SAMPLING_TIME[] PROGMEM = "http://www.opengis.net/def/property/OGC/0/SamplingTime";
+const char DEF_ISO8601[] PROGMEM = "http://www.opengis.net/def/uom/ISO-8601/0/Gregorian";
+const char DEF_UTC[] PROGMEM = "http://www.opengis.net/def/trs/BIPM/0/UTC";
+const char DEF_EPSG4326[] PROGMEM = "http://www.opengis.net/def/crs/EPSG/0/4326";
+const char DEF_EPSG4979[] PROGMEM = "http://www.opengis.net/def/crs/EPSG/0/4979";
+const char DEF_NED[] PROGMEM = "http://www.opengis.net/def/cs/OGC/0/NED";
 const char DEF_HEADING[] PROGMEM = "http://sensorml.com/ont/swe/property/TrueHeading";
 const char DEF_PITCH[] PROGMEM = "http://sensorml.com/ont/swe/property/PitchAngle";
 const char DEF_ROLL[] PROGMEM = "http://sensorml.com/ont/swe/property/RollAngle";

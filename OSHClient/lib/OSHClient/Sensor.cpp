@@ -69,9 +69,9 @@ void Sensor::addOrientationEuler(const char* def, const char* label)
     v->setDefinition(def);
     v->setLabel(label);
     v->setRefFrame(DEF_NED);
-    v->addCoordinate("Z", "deg", "Heading Angle", DEF_HEADING);
-    v->addCoordinate("Y", "deg", "Pitch Angle", DEF_PITCH);
-    v->addCoordinate("X", "deg", "Roll Angle", DEF_ROLL);
+    v->addCoordinate("Z", "deg", "Heading Angle");
+    v->addCoordinate("Y", "deg", "Pitch Angle");
+    v->addCoordinate("X", "deg", "Roll Angle");
     this->outputs[numOutputs++] = v;
 }
 
