@@ -233,7 +233,7 @@ String SOSClient::readResponseTag(const char* tagName)
             tagValue = line.substring(idx, idx2);
         }
 
-        //Serial.println(line);
+        Serial.println(line);
     }
 
     return tagValue;
