@@ -65,18 +65,6 @@ void Measurement::writeXML(XMLWriter& w)
     w.tagClose();
 }
 
-
-// void VectorMeas::addCoordinate(const char* axisID, const char* uom, const char* label, const char* type)
-// {
-//     Measurement* m = new Measurement();
-//     m->setName(axisID);
-//     m->setAxisID(axisID);
-//     m->setType((type != NULL) ? type : QUANTITY);
-//     m->setLabel(label);
-//     m->setUom(uom);
-//     this->coords[numCoords++] = m;
-// }
-
 void VectorMeas::addCoordinate(const char* axisID, const char* uom, const char* label, const char* type, const char* def)
 {
     Measurement* m = new Measurement();
