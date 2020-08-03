@@ -81,6 +81,7 @@ extern const char DEF_ROLL[] PROGMEM;
 extern const char DEF_LAT[] PROGMEM;
 extern const char DEF_LON[] PROGMEM;
 extern const char DEF_ACCEL[] PROGMEM;
+extern const char DEF_ALT [] PROGMEM;
 
 static void buildUrl(const char* prefix, const char* path, char* buf)
 {
