@@ -168,6 +168,8 @@ class Device
 {
     OSH_GETSETVAR(const char*, UniqueID);
     OSH_GETSETVAR(const char*, Name);
+    OSH_GETSETVAR(const char*, Label);
+    OSH_GETSETVAR(const char*, DataRecordDef); // definition URL
     OSH_GETSETVAR(const char*, Description);
     OSH_GETSETVAR(const double*, Location); // array of size 3 in EPSG 4979
 
@@ -198,6 +200,7 @@ class Sensor: public Device
 {
     friend class System;
     OSH_GETSETVAR(String, StreamID);
+
 
 protected:
     int numOutputs = 0;

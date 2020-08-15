@@ -87,6 +87,7 @@ void Sensor::addAccel(const char* def, const char* label)
     this->outputs[numOutputs++] = v;
 }
 
+
 #ifndef OSH_NOXML
 
 void Sensor::writeXML(XMLWriter& w, bool nested)
@@ -140,7 +141,13 @@ void Sensor::writeOutput(XMLWriter& w)
     }
     else
     {
-        w.tagOpen(w.buildTagName(SWE_PREFIX, ELT_DATARECORD));
+        w.tagStart(w.buildTagName(SWE_PREFIX, ELT_DATARECORD));
+        w.tagField(w.buildTagName(NULL, ATT_DEFINITION), this->DataRecordDef);
+        w.tagEnd(true, false);
+        if (this->Label != NULL)
+        {
+            w.writeNode(w.buildTagName(SWE_PREFIX, ELT_LABEL), this->Label);
+        }
 
         for (int i = 0; i < numOutputs; i++)
         {
