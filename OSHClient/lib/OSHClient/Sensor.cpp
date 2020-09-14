@@ -87,6 +87,18 @@ void Sensor::addAccel(const char* def, const char* label)
     this->outputs[numOutputs++] = v;
 }
 
+void Sensor::addMag(const char* def, const char* label)
+{
+    VectorMeas* v = new VectorMeas();
+    v->setDefinition(def);
+    v->setLabel(label);
+    v->setRefFrame("#PLATFORM_FRAME");
+    v->addCoordinate("X", "uT", "X Mag", NULL, DEF_MAG);
+    v->addCoordinate("Y", "uT", "Y Mag", NULL, DEF_MAG);
+    v->addCoordinate("Z", "uT", "Z Mag", NULL, DEF_MAG);
+    this->outputs[numOutputs++] = v;
+}
+
 
 #ifndef OSH_NOXML
 

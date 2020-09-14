@@ -1,5 +1,7 @@
 #include <Adafruit_Sensor.h>
-#include <Adafruit_HMC5883_U.h>
+#include <Adafruit_BNO055.h>
+// #include <utility/imumaths.h>
+#include <Adafruit_BME280.h>
 #include <OSHClient.h>
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
@@ -44,10 +46,11 @@ SOSClient* sos1;
 
 static const char BOUYID_URI[] PROGMEM = "http://dbpedia.org/resource/IMEI";
 static const char SEQNUM_URI[] PROGMEM = "http://sensorml.com/ont/swe/property/SequenceNumber";
-static const char MAG_URI[] PROGMEM = "http://qudt.org/vocab/quantitykind/MagneticField";
+static const char AIRTEMP_URI[] PROGMEM = "https://mmisw.org/ont/cf/parameter/air_temperature";
+static const char APRES_URI[] PROGMEM = "https://mmisw.org/ont/cf/parameter/air_pressure";
+static const char HUM_URI[] PROGMEM = "https://mmisw.org/ont/cf/parameter/relative_humidity";
 
-Adafruit_HMC5883_Unified mag = Adafruit_HMC5883_Unified();
-
+Adafruit_BME280 bme; // I2C
 
 int momsn = 0;
 unsigned long delayTime;
@@ -61,31 +64,33 @@ void setup() {
    // Create UID for BouyID and Sensor Module ID
   // if in need of space remove this segment and manually update BouyID and UniqueID
   // -------------------------------------------//
-    String wifiID = WiFi.macAddress();
-    char bouyUID[wifiID.length()];
-    int i; 
-    for (i = 0; i < sizeof(bouyUID); i++) { 
+  String wifiID = WiFi.macAddress();
+  char bouyUID[wifiID.length()];
+  int i; 
+  for (i = 0; i < sizeof(bouyUID); i++) { 
         bouyUID[i] = wifiID[i]; 
-      } 
-    Serial.print(bouyUID);
+    } 
 
-    String hmcID = wifiID + ":HMC5883";
-    char hmcUID[hmcID.length()];
-    for (i=0; i < sizeof(hmcUID); i++) {
-      hmcUID[i] = hmcID[i];
-    }
+  String bmeID = wifiID + ":BME"  ;
+  char bmeUID[bmeID.length()];
+  for (i = 0; i < sizeof(bmeUID); i++) { 
+      bmeUID[i] = bmeID[i]; 
+    } 
   //------------------------------------------ //
 
   // set s1 sensor metadata
-  s1.setUniqueID(hmcUID);
-  s1.setName("HMC5883");
-  s1.setDataRecordDef("urn:darpa:oot:message:magnetometer");
-  s1.setLabel("Magnetometer Message");
+   // set s1 sensor metadata
+  s1.setUniqueID(bmeUID);
+  s1.setName("BME280 - BP/T/RH");
+  s1.setDataRecordDef("urn:darpa:oot:message:environmental");
+  s1.setLabel("Environmental Observations");
   s1.addTimeStampUTC();
   s1.addMeasurement("Bouy_ID", BOUYID_URI, NULL, "Bouy ID", TEXT);
   s1.addMeasurement("MOMSN", SEQNUM_URI, NULL, "MO Message Sequence Number", COUNT);
-  s1.addMag(MAG_URI, "Magnetometer Field Strength");
-  
+  s1.addMeasurement("atpres", APRES_URI, "hPa", "Atmospheric Pressure");
+  s1.addMeasurement("airtemp", AIRTEMP_URI, "Cel", "Air Temperature");
+  s1.addMeasurement("relhum", HUM_URI, "%", "Relative Humidity");
+
 
   // connect to WiFi
   Serial.print("Connecting to ");
@@ -110,18 +115,14 @@ void setup() {
   setSyncInterval(86400); // Once per day = 86,400
 
   //Initialise the sensor
-  if(!mag.begin())
-  {
-    /* There was a problem detecting the TSL2561 ... check your connections */
-    Serial.print("Ooops, no HMC5883detected ... Check your wiring or I2C ADDR!");
-    while(1);
-  }
+    
+  bme.begin(0x76); // BME280
 
   // register to OSH node using SOS-T protocol
   sos1 = new SOSClient(client, oshNodeIp, 9292, "/sensorhub/sos");
   sos1->registerDevice(&s1); 
 
-  Serial.println("HMC5883 Example");
+  Serial.println("*** Example");
 
   // set delay time
   delayTime = 60000;
@@ -141,19 +142,21 @@ void loop(void) {
       sos1->pushString(getTimeISO8601());
       sos1->pushString(bouyID);
       sos1->pushInt(momsn);
-
-      // Get magnetic event
-      sensors_event_t event;  
-      mag.getEvent(&event);
+      // Get BME280 data & print values
+      Serial.print("Barometric Pressure: ");
+      Serial.print(bme.readPressure()/100.0F);
+      Serial.println(" hPa");
+      sos1->pushFloat(bme.readPressure()/100.0F);
     
-      /* Display the results (magnetic vector values are in micro-Tesla (uT)) */
-      Serial.print("X: "); Serial.print(event.magnetic.x); Serial.print("  ");
-      Serial.print("Y: "); Serial.print(event.magnetic.y); Serial.print("  ");
-      Serial.print("Z: "); Serial.print(event.magnetic.z); Serial.print("  ");Serial.println("uT");
+      Serial.print("Temperature: ");
+      Serial.print(bme.readTemperature());
+      Serial.println(" C");
+      sos1->pushFloat(bme.readTemperature()); 
     
-      sos1->pushFloat(event.magnetic.x);
-      sos1->pushFloat(event.magnetic.y);
-      sos1->pushFloat(event.magnetic.z);
+      Serial.print("Humidity: ");
+      Serial.print(bme.readHumidity());
+      Serial.println(" %");
+      sos1->pushFloat(bme.readHumidity());
     
       sos1->sendMeasurement();
       

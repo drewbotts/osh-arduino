@@ -82,6 +82,7 @@ extern const char DEF_LAT[] PROGMEM;
 extern const char DEF_LON[] PROGMEM;
 extern const char DEF_ACCEL[] PROGMEM;
 extern const char DEF_ALT [] PROGMEM;
+extern const char DEF_MAG [] PROGMEM;
 
 static void buildUrl(const char* prefix, const char* path, char* buf)
 {
@@ -216,6 +217,7 @@ public:
     void addLocationLLA(const char* def, const char* label = 0);
     void addOrientationEuler(const char* def, const char* label = 0);
     void addAccel(const char* def, const char* label = 0);
+    void addMag(const char* def, const char* label=0);
     bool isSystem() { return false; };
 
 #ifndef OSH_NOXML

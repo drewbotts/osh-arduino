@@ -68,7 +68,7 @@ void setup() {
     } 
     Serial.print(bouyUID);
 
-    String angVelID = wifiID + ":angularvel";
+    String angVelID = wifiID + ":L3GD20H";
     char angVelUID[angVelID.length()];
     for (i = 0; i < sizeof(angVelUID); i++) {
       angVelUID[i] = angVelID[i];

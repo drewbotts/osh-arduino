@@ -1,5 +1,6 @@
 #include <Adafruit_Sensor.h>
-#include <Adafruit_HMC5883_U.h>
+#include <Adafruit_TSL2561_U.h>
+// #include <utility/imumaths.h>
 #include <OSHClient.h>
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
@@ -44,10 +45,9 @@ SOSClient* sos1;
 
 static const char BOUYID_URI[] PROGMEM = "http://dbpedia.org/resource/IMEI";
 static const char SEQNUM_URI[] PROGMEM = "http://sensorml.com/ont/swe/property/SequenceNumber";
-static const char MAG_URI[] PROGMEM = "http://qudt.org/vocab/quantitykind/MagneticField";
+static const char ILLU_URI[] PROGMEM = "http://sweet.jpl.nasa.gov/2.3/propEnergyFlux.owl#Illuminance";
 
-Adafruit_HMC5883_Unified mag = Adafruit_HMC5883_Unified();
-
+Adafruit_TSL2561_Unified tsl = Adafruit_TSL2561_Unified(TSL2561_ADDR_FLOAT, 12345);
 
 int momsn = 0;
 unsigned long delayTime;
@@ -61,30 +61,29 @@ void setup() {
    // Create UID for BouyID and Sensor Module ID
   // if in need of space remove this segment and manually update BouyID and UniqueID
   // -------------------------------------------//
-    String wifiID = WiFi.macAddress();
-    char bouyUID[wifiID.length()];
-    int i; 
-    for (i = 0; i < sizeof(bouyUID); i++) { 
+  String wifiID = WiFi.macAddress();
+  char bouyUID[wifiID.length()];
+  int i; 
+  for (i = 0; i < sizeof(bouyUID); i++) { 
         bouyUID[i] = wifiID[i]; 
-      } 
-    Serial.print(bouyUID);
+    } 
 
-    String hmcID = wifiID + ":HMC5883";
-    char hmcUID[hmcID.length()];
-    for (i=0; i < sizeof(hmcUID); i++) {
-      hmcUID[i] = hmcID[i];
-    }
+  String luxID = wifiID + ":TSL2561";
+  char luxUID[luxID.length()];
+  for (i = 0; i < sizeof(luxUID); i++) {
+    luxUID[i] = luxID[i];
+  }
   //------------------------------------------ //
 
   // set s1 sensor metadata
-  s1.setUniqueID(hmcUID);
-  s1.setName("HMC5883");
-  s1.setDataRecordDef("urn:darpa:oot:message:magnetometer");
-  s1.setLabel("Magnetometer Message");
+  s1.setUniqueID(luxUID);
+  s1.setName("TSL2561 - Illuminance");
+  s1.setDataRecordDef("urn:darpa:oot:message:illum");
+  s1.setLabel("Illuminance Message");
   s1.addTimeStampUTC();
   s1.addMeasurement("Bouy_ID", BOUYID_URI, NULL, "Bouy ID", TEXT);
   s1.addMeasurement("MOMSN", SEQNUM_URI, NULL, "MO Message Sequence Number", COUNT);
-  s1.addMag(MAG_URI, "Magnetometer Field Strength");
+  s1.addMeasurement("illum", ILLU_URI, "lux", "Illuminance");
   
 
   // connect to WiFi
@@ -109,19 +108,25 @@ void setup() {
   setSyncProvider(getNtpTime);
   setSyncInterval(86400); // Once per day = 86,400
 
-  //Initialise the sensor
-  if(!mag.begin())
+  tsl.enableAutoRange(true);
+  tsl.setIntegrationTime(TSL2561_INTEGRATIONTIME_13MS);
+  //tsl.setIntegrationTime(TSL2561_INTEGRATIONTIME_101MS);
+  //tsl.setIntegrationTime(TSL2561_INTEGRATIONTIME_402MS);
+
+  /* Initialise the sensor */
+  if(!tsl.begin())
   {
     /* There was a problem detecting the TSL2561 ... check your connections */
-    Serial.print("Ooops, no HMC5883detected ... Check your wiring or I2C ADDR!");
+    Serial.print("Ooops, no TSL2561 detected ... Check your wiring or I2C ADDR!");
     while(1);
   }
+    
 
   // register to OSH node using SOS-T protocol
   sos1 = new SOSClient(client, oshNodeIp, 9292, "/sensorhub/sos");
   sos1->registerDevice(&s1); 
 
-  Serial.println("HMC5883 Example");
+  Serial.println("*** Example");
 
   // set delay time
   delayTime = 60000;
@@ -141,19 +146,23 @@ void loop(void) {
       sos1->pushString(getTimeISO8601());
       sos1->pushString(bouyID);
       sos1->pushInt(momsn);
-
-      // Get magnetic event
+      // Get illuminance event
       sensors_event_t event;  
-      mag.getEvent(&event);
-    
-      /* Display the results (magnetic vector values are in micro-Tesla (uT)) */
-      Serial.print("X: "); Serial.print(event.magnetic.x); Serial.print("  ");
-      Serial.print("Y: "); Serial.print(event.magnetic.y); Serial.print("  ");
-      Serial.print("Z: "); Serial.print(event.magnetic.z); Serial.print("  ");Serial.println("uT");
-    
-      sos1->pushFloat(event.magnetic.x);
-      sos1->pushFloat(event.magnetic.y);
-      sos1->pushFloat(event.magnetic.z);
+      tsl.getEvent(&event);
+      
+      /* Display the results (light is measured in lux) */
+      if (event.light)
+      {
+        Serial.print(event.light); Serial.println(" lux");
+      }
+      else
+      {
+        /* If event.light = 0 lux the sensor is probably saturated
+          and no reliable data could be generated! */
+        Serial.println("Sensor overload");
+      }
+
+      sos1->pushFloat(event.light); // add random temperature value      
     
       sos1->sendMeasurement();
       

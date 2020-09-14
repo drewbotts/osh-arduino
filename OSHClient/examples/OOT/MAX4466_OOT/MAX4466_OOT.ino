@@ -1,5 +1,6 @@
 #include <Adafruit_Sensor.h>
-#include <Adafruit_HMC5883_U.h>
+#include <Adafruit_BNO055.h>
+// #include <utility/imumaths.h>
 #include <OSHClient.h>
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
@@ -8,6 +9,8 @@
 
 
 using namespace osh;
+
+#define ANALOG_OUTPUT A0 // MAX4466 output pin
 
 //--------------------------------------------- //
 //------------- Network Constants ------------- //
@@ -44,10 +47,10 @@ SOSClient* sos1;
 
 static const char BOUYID_URI[] PROGMEM = "http://dbpedia.org/resource/IMEI";
 static const char SEQNUM_URI[] PROGMEM = "http://sensorml.com/ont/swe/property/SequenceNumber";
-static const char MAG_URI[] PROGMEM = "http://qudt.org/vocab/quantitykind/MagneticField";
+static const char SOUNDPOWER_URI[] PROGMEM = "http://qudt.org/vocab/quantitykind/SoundPowerLevel";
 
-Adafruit_HMC5883_Unified mag = Adafruit_HMC5883_Unified();
-
+const int sampleWindow = 50; // Sample window width in mS (50 mS = 20Hz)
+unsigned int micSample;
 
 int momsn = 0;
 unsigned long delayTime;
@@ -61,31 +64,31 @@ void setup() {
    // Create UID for BouyID and Sensor Module ID
   // if in need of space remove this segment and manually update BouyID and UniqueID
   // -------------------------------------------//
-    String wifiID = WiFi.macAddress();
-    char bouyUID[wifiID.length()];
-    int i; 
-    for (i = 0; i < sizeof(bouyUID); i++) { 
+      
+  String wifiID = WiFi.macAddress();
+  char bouyUID[wifiID.length()];
+  int i; 
+  for (i = 0; i < sizeof(bouyUID); i++) { 
         bouyUID[i] = wifiID[i]; 
-      } 
-    Serial.print(bouyUID);
+    } 
 
-    String hmcID = wifiID + ":HMC5883";
-    char hmcUID[hmcID.length()];
-    for (i=0; i < sizeof(hmcUID); i++) {
-      hmcUID[i] = hmcID[i];
-    }
+  String maxID = wifiID + ":MAX"  ;
+  char maxUID[maxID.length()];
+  for (i = 0; i < sizeof(maxUID); i++) { 
+      maxUID[i] = maxID[i]; 
+    } 
   //------------------------------------------ //
 
   // set s1 sensor metadata
-  s1.setUniqueID(hmcUID);
-  s1.setName("HMC5883");
-  s1.setDataRecordDef("urn:darpa:oot:message:magnetometer");
-  s1.setLabel("Magnetometer Message");
+  s1.setUniqueID(maxUID);
+  s1.setName("MAX4466 - Microphone");
+  s1.setDataRecordDef("urn:darpa:oot:message:audio");
+  s1.setLabel("Audio Message");
   s1.addTimeStampUTC();
   s1.addMeasurement("Bouy_ID", BOUYID_URI, NULL, "Bouy ID", TEXT);
   s1.addMeasurement("MOMSN", SEQNUM_URI, NULL, "MO Message Sequence Number", COUNT);
-  s1.addMag(MAG_URI, "Magnetometer Field Strength");
-  
+  s1.addMeasurement("acousticpower", SOUNDPOWER_URI, "HZ", "Acoustic Power Level");
+
 
   // connect to WiFi
   Serial.print("Connecting to ");
@@ -110,18 +113,13 @@ void setup() {
   setSyncInterval(86400); // Once per day = 86,400
 
   //Initialise the sensor
-  if(!mag.begin())
-  {
-    /* There was a problem detecting the TSL2561 ... check your connections */
-    Serial.print("Ooops, no HMC5883detected ... Check your wiring or I2C ADDR!");
-    while(1);
-  }
+    
 
   // register to OSH node using SOS-T protocol
   sos1 = new SOSClient(client, oshNodeIp, 9292, "/sensorhub/sos");
   sos1->registerDevice(&s1); 
 
-  Serial.println("HMC5883 Example");
+  Serial.println("*** Example");
 
   // set delay time
   delayTime = 60000;
@@ -141,19 +139,13 @@ void loop(void) {
       sos1->pushString(getTimeISO8601());
       sos1->pushString(bouyID);
       sos1->pushInt(momsn);
-
-      // Get magnetic event
-      sensors_event_t event;  
-      mag.getEvent(&event);
-    
-      /* Display the results (magnetic vector values are in micro-Tesla (uT)) */
-      Serial.print("X: "); Serial.print(event.magnetic.x); Serial.print("  ");
-      Serial.print("Y: "); Serial.print(event.magnetic.y); Serial.print("  ");
-      Serial.print("Z: "); Serial.print(event.magnetic.z); Serial.print("  ");Serial.println("uT");
-    
-      sos1->pushFloat(event.magnetic.x);
-      sos1->pushFloat(event.magnetic.y);
-      sos1->pushFloat(event.magnetic.z);
+      
+      // Get MAX4466 data & print voltage
+      double voltage = getMicVoltage();
+      Serial.print("Voltage: ");
+      Serial.print(voltage);
+      Serial.println(" V");
+      sos1->pushFloat(voltage);      
     
       sos1->sendMeasurement();
       
@@ -164,6 +156,31 @@ void loop(void) {
   delay(delayTime);
 }
 
+double getMicVoltage(void) {
+  // Define nums for MAX4466 data manipulation
+  unsigned long startMillis= millis();  // Start of sample window
+  unsigned int peakToPeak = 0;   // peak-to-peak level
+  unsigned int signalMax = 0;
+  unsigned int signalMin = 1024;
+
+  // collect data for 50 mS
+  while (millis() - startMillis < sampleWindow) {
+    micSample = analogRead(ANALOG_OUTPUT);
+    // toss out spurious readings
+    if (micSample < 1024) {
+      if (micSample > signalMax) {
+        signalMax = micSample;  // save just the max levels
+      }
+      else if (micSample < signalMin) {
+        signalMin = micSample;  // save just the min levels
+      }
+    }
+  }
+  // Get voltage output and print its value.
+  peakToPeak = signalMax - signalMin;  // max - min = peak-peak amplitude
+  double volts = ((peakToPeak * 3.3) / 1024);  // convert to volts
+  return volts;
+}
 
 char * getTimeISO8601() {
   

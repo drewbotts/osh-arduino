@@ -67,6 +67,7 @@ const char DEF_LAT[] PROGMEM = "http://www.opengis.net/def/axis-name/EPSG/0/9901
 const char DEF_LON[] PROGMEM = "http://www.opengis.net/def/axis-name/EPSG/0/9902";
 const char DEF_ACCEL[] PROGMEM = "http://qudt.org/vocab/quantitykind/LinearAcceleration";
 const char DEF_ALT[] PROGMEM = "http://mmisw.org/ont/cf/parameter/altitude";
+const char DEF_MAG[] PROGMEM = "http://qudt.org/vocab/quantitykind/MagneticField";
 
 
 
